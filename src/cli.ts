@@ -12,36 +12,45 @@ commander
 	.usage("<command> [argument]")
 	.option("-a, --all", "List all items");
 
+commander
+	.command("get [target]")
+	.description("get configuration from your .akashicrc")
+	.action((target: string, opts: any = {}) => {
+		const logger = new ConsoleLogger({ quiet: opts.quiet });
+		config.getConfigItem(null, target).then(value => logger.print(value));
+	});
+
+commander
+	.command("set [target] [value]")
+	.description("set configuration to your .akashicrc")
+	.action((target: string, value: string, opts: any = {}) => {
+		config.setConfigItem(null, target, value);
+	});
+
+commander
+	.command("delete [target]")
+	.description("delete configuration from your .akashicrc")
+	.action((target: string, opts: any = {}) => {
+		config.deleteConfigItem(null, target);
+	});
+
+commander
+	.command("list [target]")
+	.description("delete configuration from your .akashicrc")
+	.action((target: string, opts: any = {}) => {
+		const isAll = !!commander["all"];
+		const logger = new ConsoleLogger({ quiet: opts.quiet });
+		if (isAll) {
+			config.listAllConfigItems(logger, null);
+		} else {
+			config.listConfigItems(logger);
+		}
+	});
+
 export function run(argv: string[]): void {
 	commander.parse(argv);
-	const logger = new ConsoleLogger();
-	let command: Promise<void>;
-	switch (commander.args[0]) {
-		case "get":
-			// TODO: validatorをakashicコマンドから引き渡す方法の検討と実装
-			command = config.getConfigItem(null, commander.args[1])
-				.then(value => logger.print(value));
-			break;
-		case "set":
-			command = config.setConfigItem(null, commander.args[1], commander.args[2]);
-			break;
-		case "delete":
-			command = config.deleteConfigItem(null, commander.args[1]);
-			break;
-		case "list":
-			if ((<any>commander).all != null) {
-				command = config.listAllConfigItems(logger, null);
-			} else {
-				command = config.listConfigItems(logger);
-			}
-			break;
-		default:
-			command = Promise.reject("unknown command \"" + commander.args[0] + "\"");
-			break;
+
+	if (!argv[2].match(/^(get|set|delete|list)$/)) {
+		commander.help();
 	}
-	command
-		.catch(err => {
-			logger.error(err);
-			process.exit(1);
-		});
 }
