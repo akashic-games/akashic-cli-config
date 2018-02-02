@@ -9,8 +9,7 @@ const packageJson = JSON.parse(fs.readFileSync(path.resolve(__dirname, "..", "pa
 commander
 	.description("List and edit configurations")
 	.version(packageJson.version)
-	.usage("<command> [argument]")
-	.option("-a, --all", "List all items");
+	.usage("<command> [argument]");
 
 commander
 	.command("get [target]")
@@ -35,10 +34,11 @@ commander
 	});
 
 commander
-	.command("list [target]")
-	.description("delete configuration from your .akashicrc")
-	.action((target: string, opts: any = {}) => {
-		const isAll = !!commander["all"];
+	.command("list")
+	.option("-a, --all", "List all items")
+	.description("list configuration from your .akashicrc")
+	.action((opts: any = {}) => {
+		const isAll = !!opts.all;
 		const logger = new ConsoleLogger({ quiet: opts.quiet });
 		if (isAll) {
 			config.listAllConfigItems(logger, null);
@@ -50,7 +50,7 @@ commander
 export function run(argv: string[]): void {
 	commander.parse(argv);
 
-	if (!argv[2].match(/^(get|set|delete|list)$/)) {
+	if (!/^(get|set|delete|list)$/.test(argv[2])) {
 		commander.help();
 	}
 }
