@@ -120,6 +120,7 @@ export function listConfigItems(logger: Logger): Promise<void> {
 
 export function listAllConfigItems(logger: Logger, validator: StringMap): Promise<void> {
 	const config = new AkashicConfigFile({});
+
 	return config.load().then(() =>
 		Object.keys(validator).forEach(key =>
 			logger.print(`${key} = ${lodashGet(config.data, key, "")}`)
