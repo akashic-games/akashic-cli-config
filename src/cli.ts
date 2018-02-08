@@ -35,16 +35,11 @@ commander
 
 commander
 	.command("list")
-	.option("-a, --all", "List all items")
+	// .option("-a, --all", "List all items")
 	.description("list configuration from your .akashicrc")
 	.action((opts: any = {}) => {
-		const isAll = !!opts.all;
 		const logger = new ConsoleLogger({ quiet: opts.quiet });
-		if (isAll) {
-			config.listAllConfigItems(logger, null);
-		} else {
-			config.listConfigItems(logger);
-		}
+		config.listConfigItems(logger);
 	});
 
 export function run(argv: string[]): void {
