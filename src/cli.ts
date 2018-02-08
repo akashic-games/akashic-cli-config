@@ -35,6 +35,7 @@ commander
 
 commander
 	.command("list")
+	// akashicrcの仕様を定義する validator が出来るまで --all は実装できない
 	// .option("-a, --all", "List all items")
 	.description("list configuration from your .akashicrc")
 	.action((opts: any = {}) => {
